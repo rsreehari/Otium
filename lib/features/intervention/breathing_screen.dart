@@ -117,7 +117,7 @@ class _BreathingScreenState extends State<BreathingScreen> with SingleTickerProv
           PrimaryButton(
             label: _secondsRemaining > 0 ? 'Wait... ($_secondsRemaining)' : 'Resume Sprint',
             onPressed: _secondsRemaining > 0 ? null : () {
-              context.read<FatigueProvider>().reset();
+              context.read<FatigueProvider>().clearFatigue();
               context.go('/sprint');
             },
           ),
