@@ -13,12 +13,19 @@ class RecoveryScreen extends StatefulWidget {
 }
 
 class _RecoveryScreenState extends State<RecoveryScreen> {
-  Duration _timeLeft = const Duration(minutes: 15);
-  Timer? _timer;
+  final List<String> _nudges = [
+    'Step away from the screen',
+    'Sit quietly for 5 minutes',
+    'Light movement or nature',
+    'Hydrate and look at the horizon',
+    'Practice 5-4-3-2-1 grounding',
+  ];
+  late String _currentNudge;
 
   @override
   void initState() {
     super.initState();
+    _currentNudge = (List.from(_nudges)..shuffle()).first;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_timeLeft.inSeconds > 0) {
         setState(() => _timeLeft -= const Duration(seconds: 1));
@@ -39,7 +46,7 @@ class _RecoveryScreenState extends State<RecoveryScreen> {
   Widget build(BuildContext context) {
     // WillPopScope to prevent back button
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => _timeLeft.inSeconds == 0,
       child: FullScreenContainer(
         backgroundColor: AppColors.primary,
         child: Column(
@@ -55,10 +62,10 @@ class _RecoveryScreenState extends State<RecoveryScreen> {
               style: const TextStyle(fontSize: 72, color: Colors.white, fontWeight: FontWeight.w200),
             ),
             const SizedBox(height: 48),
-            const Text(
-              'Step away from the screen\nSit quietly for 5 minutes\nLight movement or nature',
+            Text(
+              _currentNudge,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, color: Colors.white70, height: 1.5),
+              style: const TextStyle(fontSize: 18, color: Colors.white70, height: 1.5),
             ),
             const Spacer(),
             // No button to exit, it exits automatically
