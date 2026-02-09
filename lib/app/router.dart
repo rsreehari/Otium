@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import '../features/splash/splash_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/sprint/sprint_screen.dart';
@@ -9,8 +10,12 @@ import '../features/dashboard/dashboard_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
-    initialLocation: '/onboarding',
+    initialLocation: '/splash',
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
