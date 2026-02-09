@@ -14,10 +14,11 @@ class SprintScreen extends StatefulWidget {
   State<SprintScreen> createState() => _SprintScreenState();
 }
 
-class _SprintScreenState extends State<SprintScreen> {
+class _SprintScreenState extends State<SprintScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SprintProvider>().startSprint();
       context.read<FatigueProvider>().reset();
@@ -25,11 +26,25 @@ class _SprintScreenState extends State<SprintScreen> {
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // User came back after switching away
+      context.read<FatigueProvider>().reportAppSwitch();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final sprint = context.watch<SprintProvider>();
     final fatigue = context.watch<FatigueProvider>();
 
-    // Mock logic to trigger intervention
+    // Automated trigger for intervention when fatigued
     if (fatigue.isFatigued) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.go('/intervention');
