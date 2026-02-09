@@ -21,6 +21,8 @@ class _RecoveryScreenState extends State<RecoveryScreen> {
     'Practice 5-4-3-2-1 grounding',
   ];
   late String _currentNudge;
+  Duration _timeLeft = const Duration(minutes: 15);
+  Timer? _timer;
 
   @override
   void initState() {

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../state/sprint_provider.dart';
 import '../../state/fatigue_provider.dart';
+import '../../models/session.dart';
 import '../../widgets/full_screen_container.dart';
 import 'sprint_timer.dart';
 
