@@ -89,6 +89,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     context.go('/');
                   },
           ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.privacy_tip_outlined,
+                  size: 14, color: Colors.grey.shade500),
+              const SizedBox(width: 4),
+              Text(
+                'No cloud. No tracking. Fully offline.',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
