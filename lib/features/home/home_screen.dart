@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/colors.dart';
+import '../../core/utils/intervention_service.dart';
 import '../../widgets/full_screen_container.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/state_indicator.dart';
 
+/// HomeScreen: Entry point for focus sprints.
+///
+/// Also handles:
+/// - Overlay permission check/request for Android intervention
+/// - Calm, breathing-aligned aesthetic
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,6 +24,10 @@ class _HomeScreenState extends State<HomeScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
+
+  final InterventionService _interventionService = InterventionService();
+  bool _hasOverlayPermission = false;
+  bool _permissionChecked = false;
 
   @override
   void initState() {
@@ -50,6 +60,27 @@ class _HomeScreenState extends State<HomeScreen>
     );
 
     _controller.forward();
+    _checkOverlayPermission();
+  }
+
+  Future<void> _checkOverlayPermission() async {
+    if (_interventionService.isAndroid) {
+      final hasPermission = await _interventionService.hasOverlayPermission();
+      if (mounted) {
+        setState(() {
+          _hasOverlayPermission = hasPermission;
+          _permissionChecked = true;
+        });
+      }
+    } else {
+      setState(() => _permissionChecked = true);
+    }
+  }
+
+  Future<void> _requestPermission() async {
+    await _interventionService.requestOverlayPermission();
+    // Re-check after returning from settings
+    Future.delayed(const Duration(milliseconds: 500), _checkOverlayPermission);
   }
 
   @override
@@ -148,6 +179,57 @@ class _HomeScreenState extends State<HomeScreen>
                     },
                   ),
                   const SizedBox(height: 20),
+                  // Overlay permission status (Android only)
+                  if (_interventionService.isAndroid &&
+                      _permissionChecked &&
+                      !_hasOverlayPermission)
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 500),
+                      opacity: 1.0,
+                      child: GestureDetector(
+                        onTap: _requestPermission,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.orange.shade200,
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.shield_outlined,
+                                size: 16,
+                                color: Colors.orange.shade700,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Enable overlay for intervention',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.orange.shade800,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 12,
+                                color: Colors.orange.shade700,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   // Last recovery info with fade
                   AnimatedOpacity(
                     duration: const Duration(milliseconds: 500),

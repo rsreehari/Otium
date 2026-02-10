@@ -7,6 +7,13 @@ import '../../models/session.dart';
 import '../../widgets/full_screen_container.dart';
 import 'sprint_timer.dart';
 
+/// SprintScreen: Minimal, breathing-aligned focus timer.
+///
+/// Design Philosophy:
+/// - ONLY the timer should be visible
+/// - Zero cognitive load from UI chrome
+/// - Interaction tracking is invisible (pattern sensing)
+/// - Breathing rhythm through subtle pulse animation
 class SprintScreen extends StatefulWidget {
   const SprintScreen({super.key});
 
@@ -39,6 +46,7 @@ class _SprintScreenState extends State<SprintScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && mounted) {
+      // Pattern sensing: app switch is recorded invisibly
       context.read<FatigueProvider>().reportAppSwitch();
     }
   }
@@ -65,33 +73,14 @@ class _SprintScreenState extends State<SprintScreen>
     }
 
     return GestureDetector(
+      // Invisible friction tracking - taps are sensed, not counted visually
       onTap: () => context.read<FatigueProvider>().incrementFriction(),
       behavior: HitTestBehavior.opaque,
       child: FullScreenContainer(
         backgroundColor: Colors.blueGrey.shade50,
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            const Text(
-              'Focus sprint in progress',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.blueGrey,
-                letterSpacing: 0.5,
-              ),
-            ),
-            const Spacer(),
-            SprintTimer(timeLeft: sprint.timeLeft),
-            const Spacer(),
-            Text(
-              'Interactions: ${fatigue.interactionCount}',
-              style: TextStyle(
-                color: Colors.blueGrey.withOpacity(0.5),
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 40),
-          ],
+        child: Center(
+          // Pure visual focus: only the timer, nothing else
+          child: SprintTimer(timeLeft: sprint.timeLeft),
         ),
       ),
     );

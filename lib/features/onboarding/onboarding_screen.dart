@@ -7,6 +7,12 @@ import '../../widgets/full_screen_container.dart';
 import '../../widgets/primary_button.dart';
 import 'role_card.dart';
 
+/// OnboardingScreen: Calibrates cognitive profile and explains Otium's philosophy.
+///
+/// Key Messaging:
+/// - Phone as "escape device" not productivity tool
+/// - Cognitive load manifests as fragmentation, not duration
+/// - Otium regulates the nervous system, not behavior
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -38,15 +44,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'How do you mostly use your phone?',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            'Your phone is an escape device.',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              height: 1.3,
+            ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'This adapts your overload sensitivity to your cognitive tolerance.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+          Text(
+            'Not a work device. Not a productivity tool.\n'
+            'Otium doesn\'t fix habits — it regulates your nervous system when your phone becomes a coping mechanism.',
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.grey.shade700,
+              height: 1.5,
+            ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 28),
+          const Text(
+            'How do you typically use your phone?',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'This calibrates your cognitive overload sensitivity.',
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 20),
           Expanded(
             child: ListView(
               children: roles.entries.map((entry) {
@@ -82,10 +107,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 : () {
                     final userProvider = context.read<UserProvider>();
                     final fatigueProvider = context.read<FatigueProvider>();
-                    
+
                     userProvider.setRole(selectedRole!);
                     fatigueProvider.updateProfile(userProvider.profile);
-                    
+
                     context.go('/');
                   },
           ),
@@ -93,15 +118,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.privacy_tip_outlined,
-                  size: 14, color: Colors.grey.shade500),
+              Icon(
+                Icons.privacy_tip_outlined,
+                size: 14,
+                color: Colors.grey.shade500,
+              ),
               const SizedBox(width: 4),
               Text(
                 'No cloud. No tracking. Fully offline.',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade500,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
               ),
             ],
           ),
