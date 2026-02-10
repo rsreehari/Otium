@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -14,72 +15,92 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late AnimationController _pulseController;
-  late AnimationController _slideController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _pulseAnimation;
-  late Animation<double> _scaleAnimation;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _textFadeAnimation;
+  late AnimationController _logoController;
+  late AnimationController _breathController;
+  late AnimationController _textController;
+  late AnimationController _loadingController;
+  
+  late Animation<double> _logoScale;
+  late Animation<double> _logoOpacity;
+  late Animation<double> _breathAnimation;
+  late Animation<double> _textOpacity;
+  late Animation<Offset> _textSlide;
 
   @override
   void initState() {
     super.initState();
 
-    // Main fade controller
-    _fadeController = AnimationController(
+    // Logo entrance animation
+    _logoController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1000),
     );
 
-    // Pulsing controller for the logo
-    _pulseController = AnimationController(
+    // Breathing pulse animation
+    _breathController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 4000),
     )..repeat(reverse: true);
 
-    // Slide controller for text
-    _slideController = AnimationController(
+    // Text entrance animation
+    _textController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    // Loading indicator rotation
+    _loadingController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
-    );
+    )..repeat();
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeOutCubic),
-    );
-
-    _pulseAnimation = Tween<double>(begin: 0.95, end: 1.1).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOutSine),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.elasticOut),
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
-        );
-
-    _textFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _logoScale = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _slideController,
-        curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
+        parent: _logoController,
+        curve: Curves.easeOutBack,
       ),
     );
 
-    // Staggered animation start
-    _fadeController.forward();
-    Future.delayed(const Duration(milliseconds: 400), () {
-      if (mounted) _slideController.forward();
+    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _logoController,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+      ),
+    );
+
+    _breathAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _breathController,
+        curve: Curves.easeInOutSine,
+      ),
+    );
+
+    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _textController,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    _textSlide = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _textController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
+    // Staggered animation sequence
+    _logoController.forward();
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) _textController.forward();
     });
 
-    // Navigate after animations complete
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      if (mounted) {
-        _checkNavigation();
-      }
+    // Navigate after animations
+    Future.delayed(const Duration(milliseconds: 3200), () {
+      if (mounted) _checkNavigation();
     });
   }
 
@@ -94,9 +115,10 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _fadeController.dispose();
-    _pulseController.dispose();
-    _slideController.dispose();
+    _logoController.dispose();
+    _breathController.dispose();
+    _textController.dispose();
+    _loadingController.dispose();
     super.dispose();
   }
 
@@ -108,96 +130,205 @@ class _SplashScreenState extends State<SplashScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Organic pulsing logo with smooth animations
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: AnimatedBuilder(
-                  animation: _pulseAnimation,
-                  builder: (context, child) {
-                    return Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.primary.withOpacity(0.08),
-                      ),
-                      child: Center(
-                        child: Transform.scale(
-                          scale: _pulseAnimation.value,
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(
-                                colors: [
-                                  AppColors.primary.withOpacity(0.9),
-                                  AppColors.primary.withOpacity(0.6),
-                                ],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(
-                                    0.3 + (_pulseAnimation.value - 0.95) * 2,
-                                  ),
-                                  blurRadius:
-                                      20 + (_pulseAnimation.value - 0.95) * 40,
-                                  spreadRadius:
-                                      5 + (_pulseAnimation.value - 0.95) * 10,
-                                ),
-                              ],
-                            ),
-                          ),
+            const Spacer(flex: 3),
+            // Premium logo with organic breathing animation
+            AnimatedBuilder(
+              animation: Listenable.merge([_logoController, _breathController]),
+              builder: (context, child) {
+                final breathValue = _breathAnimation.value;
+                return FadeTransition(
+                  opacity: _logoOpacity,
+                  child: Transform.scale(
+                    scale: _logoScale.value,
+                    child: SizedBox(
+                      width: 140,
+                      height: 140,
+                      child: CustomPaint(
+                        painter: _OtiumLogoPainter(
+                          breathPhase: breathValue,
+                          primaryColor: AppColors.primary,
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
+                  ),
+                );
+              },
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 48),
+            // Brand name with refined typography
             SlideTransition(
-              position: _slideAnimation,
+              position: _textSlide,
               child: FadeTransition(
-                opacity: _textFadeAnimation,
+                opacity: _textOpacity,
                 child: Column(
                   children: [
-                    const Text(
-                      'Otium',
+                    Text(
+                      'OTIUM',
                       style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w300,
-                        letterSpacing: 6,
-                        color: Colors.black87,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w200,
+                        letterSpacing: 12,
+                        color: AppColors.textBody,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    AnimatedBuilder(
-                      animation: _pulseController,
-                      builder: (context, child) {
-                        return Opacity(
-                          opacity: 0.5 + (_pulseAnimation.value - 0.95) * 3,
-                          child: Text(
-                            'Restoring cognitive baseline...',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                              fontStyle: FontStyle.italic,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        );
-                      },
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 40,
+                      height: 1,
+                      color: AppColors.primary.withOpacity(0.3),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'cognitive restoration',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: 3,
+                        color: AppColors.textDim,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
+            const Spacer(flex: 2),
+            // Minimal loading indicator
+            FadeTransition(
+              opacity: _textOpacity,
+              child: AnimatedBuilder(
+                animation: _loadingController,
+                builder: (context, child) {
+                  return SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: CustomPaint(
+                      painter: _MinimalLoadingPainter(
+                        progress: _loadingController.value,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const Spacer(flex: 1),
           ],
         ),
       ),
     );
+  }
+}
+
+/// Custom painter for the Otium logo - organic, breathing circles
+class _OtiumLogoPainter extends CustomPainter {
+  final double breathPhase;
+  final Color primaryColor;
+
+  _OtiumLogoPainter({
+    required this.breathPhase,
+    required this.primaryColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final maxRadius = size.width / 2;
+
+    // Outer glow ring (breathes)
+    final outerRadius = maxRadius * (0.85 + breathPhase * 0.15);
+    final outerPaint = Paint()
+      ..color = primaryColor.withOpacity(0.08 + breathPhase * 0.04)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center, outerRadius, outerPaint);
+
+    // Middle ring
+    final middleRadius = maxRadius * (0.6 + breathPhase * 0.08);
+    final middlePaint = Paint()
+      ..color = primaryColor.withOpacity(0.15 + breathPhase * 0.05)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center, middleRadius, middlePaint);
+
+    // Core circle (solid, subtle shadow)
+    final coreRadius = maxRadius * 0.35;
+    
+    // Shadow
+    final shadowPaint = Paint()
+      ..color = primaryColor.withOpacity(0.2)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+    canvas.drawCircle(center.translate(0, 4), coreRadius, shadowPaint);
+    
+    // Core
+    final corePaint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          primaryColor,
+          primaryColor.withOpacity(0.85),
+        ],
+        stops: const [0.3, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: coreRadius));
+    canvas.drawCircle(center, coreRadius, corePaint);
+
+    // Inner highlight
+    final highlightPaint = Paint()
+      ..color = Colors.white.withOpacity(0.25)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(
+      center.translate(-coreRadius * 0.25, -coreRadius * 0.25),
+      coreRadius * 0.2,
+      highlightPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _OtiumLogoPainter oldDelegate) {
+    return oldDelegate.breathPhase != breathPhase;
+  }
+}
+
+/// Minimal arc loading indicator
+class _MinimalLoadingPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+
+  _MinimalLoadingPainter({
+    required this.progress,
+    required this.color,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 2;
+
+    // Background track
+    final trackPaint = Paint()
+      ..color = color.withOpacity(0.1)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    canvas.drawCircle(center, radius, trackPaint);
+
+    // Animated arc
+    final arcPaint = Paint()
+      ..color = color.withOpacity(0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+
+    final startAngle = progress * 2 * math.pi - math.pi / 2;
+    final sweepAngle = math.pi * 0.7;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle,
+      sweepAngle,
+      false,
+      arcPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _MinimalLoadingPainter oldDelegate) {
+    return oldDelegate.progress != progress;
   }
 }

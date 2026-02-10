@@ -4,7 +4,6 @@ import '../../core/theme/colors.dart';
 import '../../core/utils/intervention_service.dart';
 import '../../widgets/full_screen_container.dart';
 import '../../widgets/primary_button.dart';
-import '../../widgets/state_indicator.dart';
 
 /// HomeScreen: Entry point for focus sprints.
 ///
@@ -97,52 +96,99 @@ class _HomeScreenState extends State<HomeScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const StateIndicator(status: 'CALM', color: AppColors.calm),
+            // Minimal status indicator
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.calm.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.calm,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Regulated',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.calm,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const Spacer(),
             SlideTransition(
               position: _slideAnimation,
               child: Column(
                 children: [
-                  // Decorative circles
+                  // Premium minimal logo mark
                   Container(
-                    width: 80,
-                    height: 80,
-                    margin: const EdgeInsets.only(bottom: 24),
+                    width: 88,
+                    height: 88,
+                    margin: const EdgeInsets.only(bottom: 32),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.primary.withOpacity(0.1),
-                          AppColors.accent.withOpacity(0.2),
-                        ],
-                      ),
+                      color: AppColors.primary.withOpacity(0.06),
                     ),
-                    child: Icon(
-                      Icons.psychology_outlined,
-                      color: AppColors.primary,
-                      size: 40,
+                    child: Center(
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.primary.withOpacity(0.12),
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.primary,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const Text(
                     'Ready to focus?',
                     style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.3,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
-                      'Start a 90-minute sprint to reclaim your biological capacity to think.',
+                      'Begin a 90-minute sprint aligned with your natural cognitive rhythm.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         color: Colors.grey.shade600,
-                        height: 1.5,
+                        height: 1.6,
+                        letterSpacing: 0.2,
                       ),
                     ),
                   ),
@@ -189,104 +235,126 @@ class _HomeScreenState extends State<HomeScreen>
                       child: GestureDetector(
                         onTap: _requestPermission,
                         child: Container(
-                          margin: const EdgeInsets.only(bottom: 12),
+                          margin: const EdgeInsets.only(bottom: 16),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
-                            vertical: 10,
+                            vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.orange.shade50,
+                            color: const Color(0xFFFFF8E1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.orange.shade200,
+                              color: const Color(0xFFFFE082),
                               width: 1,
                             ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.shield_outlined,
-                                size: 16,
-                                color: Colors.orange.shade700,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Enable overlay for intervention',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.orange.shade800,
-                                  fontWeight: FontWeight.w500,
+                              Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: const Color(0xFFFFB300).withOpacity(0.15),
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.notifications_none_rounded,
+                                    size: 14,
+                                    color: Color(0xFFFF8F00),
+                                  ),
                                 ),
                               ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 12,
-                                color: Colors.orange.shade700,
+                              const SizedBox(width: 10),
+                              Text(
+                                'Enable intervention overlay',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.amber.shade900,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 0.2,
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                  // Last recovery info with fade
+                  // Last recovery info
                   AnimatedOpacity(
                     duration: const Duration(milliseconds: 500),
                     opacity: 1.0,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.history,
-                          size: 16,
-                          color: Colors.grey.shade500,
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.calm.withOpacity(0.6),
+                          ),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 8),
                         Text(
                           'Last recovery: 2h ago',
                           style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 14,
+                            color: Colors.grey.shade500,
+                            fontSize: 13,
+                            letterSpacing: 0.3,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.lock_outline,
-                              size: 14,
-                              color: Colors.grey.shade500,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'All data stays on your device',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                                fontStyle: FontStyle.italic,
+                  const SizedBox(height: 16),
+                  // Privacy badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primary.withOpacity(0.1),
+                          ),
+                          child: Center(
+                            child: Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primary.withOpacity(0.5),
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        Text(
+                          'Fully offline · No tracking',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade600,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
