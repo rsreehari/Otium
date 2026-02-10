@@ -205,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                         child: PrimaryButton(
                           label: 'Start Focus Sprint',
-                          onPressed: () => context.go('/sprint'),
+                          onPressed: () => context.go('/mode-selection'),
                         ),
                       );
                     },

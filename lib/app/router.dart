@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../features/splash/splash_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/mode_selection/mode_selection_screen.dart';
 import '../features/sprint/sprint_screen.dart';
 import '../features/intervention/breathing_screen.dart';
 import '../features/recovery/recovery_screen.dart';
@@ -59,6 +60,30 @@ class AppRouter {
               opacity: curve,
               child: ScaleTransition(
                 scale: Tween<double>(begin: 0.95, end: 1.0).animate(curve),
+                child: child,
+              ),
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/mode-selection',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ModeSelectionScreen(),
+          transitionDuration: const Duration(milliseconds: 400),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curve = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+            );
+            return FadeTransition(
+              opacity: curve,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.08),
+                  end: Offset.zero,
+                ).animate(curve),
                 child: child,
               ),
             );
